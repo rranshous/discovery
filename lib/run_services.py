@@ -9,33 +9,14 @@ from service_client import DISCOVERY_HOST, DISCOVERY_PORT
 
 import random
 
-def serve(host='127.0.0.1',port=9191):
-    # setup the processors for each of the services
-    from services.scraper import Scraper
-    from services.requester import Requester
-
-    # the requests handler
-    from services.request_service import MatureRequestHandler
-    handler = MatureRequestHandler()
-    processor = Requester.Processor(handler)
-
-    # the scraper handler
-    from scraper_service import ScraperHandler
-    handler = ScraperHandler()
-    processor = Scraper.Processor(handler)
-
-    transport = TSocket.TServerSocket(host,port)
-    tfactory = TTransport.TBufferedTransportFactory()
-    pfactory = TBinaryProtocol.TBinaryProtocolFactory()
-    server = TServer.TThreadedServer(processor, transport, tfactory, pfactory)
-
-    print 'starting'
-    server.serve()
-    print 'done'
-
 
 def serve_service(service, handler, host='127.0.0.1',port=None,
                   is_discovery=False):
+
+    if is_discovery:
+        from tgen.discovery import Discovery, ttypes as o
+    else:
+        from lib.discovery import Discovery, o
 
     PORT_MIN = 9192
     PORT_MAX = 10999
