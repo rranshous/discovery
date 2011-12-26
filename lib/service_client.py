@@ -20,7 +20,7 @@ atexit.register(cleanup_transports)
 
 @contextmanager
 def connect_discovery():
-    from tgen.discovery import Discovery
+    from lib.discovery import Discovery
 
     host = DISCOVERY_HOST
     port = DISCOVERY_PORT
