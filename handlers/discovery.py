@@ -1,4 +1,7 @@
-from discovery import Discovery, ttypes as o
+import sys
+print 'path: %s' % sys.path[:10]
+
+from tgen.discovery import Discovery, ttypes as o
 
 from redis import Redis
 import random
@@ -129,7 +132,9 @@ class DiscoveryHandler(object):
 
 
 def run():
-    from run_services import serve_service
+    # since I know i'm discovery i know to import strait
+    # from my lib
+    from lib import serve_service
     serve_service(Discovery, DiscoveryHandler(),is_discovery=True)
 
 if __name__ == '__main__':

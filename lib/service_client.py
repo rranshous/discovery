@@ -6,11 +6,8 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
-from services.discovery_service import Discovery
-
 DISCOVERY_HOST = '127.0.0.1'
 DISCOVERY_PORT = 9191
-DISCOVERY_SERVICE = Discovery
 
 client_lookup = {}
 transport_lookup = {}
@@ -23,9 +20,11 @@ atexit.register(cleanup_transports)
 
 @contextmanager
 def connect_discovery():
+    from tgen.discovery import Discovery
+
     host = DISCOVERY_HOST
     port = DISCOVERY_PORT
-    service = DISCOVERY_SERVICE
+    service = Discovery
 
     if not client_lookup.get(service):
         transport = TSocket.TSocket(host,port)

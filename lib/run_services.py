@@ -4,12 +4,10 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 
-from lib.client import connect_discovery
-from lib.client import DISCOVERY_HOST, DISCOVERY_PORT
+from service_client import connect_discovery
+from service_client import DISCOVERY_HOST, DISCOVERY_PORT
 
 import random
-
-from discovery import Discovery, ttypes as o
 
 def serve(host='127.0.0.1',port=9191):
     # setup the processors for each of the services
@@ -81,12 +79,21 @@ def serve_service(service, handler, host='127.0.0.1',port=None,
     print 'done'
 
 if __name__ == '__main__':
-    import sys
+    import sys, os
     n = sys.argv[1]
     print 'starting: %s' % n
-    mn = 'services.%s' % n
+
+    # and the root of this project, since the handler
+    # should be at handlers/<service>
+    p = os.path.abspath('.')
+    print 'adding p: %s' % p
+    sys.path.insert(0,p)
+
+    mn = 'handlers.%s' % n
     print 'module name: %s' % mn
+
     import_string = 'from %s import run as run_service' % mn
     exec(import_string)
+
     print 'running'
     run_service()
