@@ -43,7 +43,7 @@ def serve_service(service, handler, host='127.0.0.1',port=None,
             service_details = o.Service(
                 host=host,
                 port=port,
-                name=service.__name__
+                name=service.__name__.split('.')[-1]
             )
             discovery_client.register_service(service_details)
 

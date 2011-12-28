@@ -1,6 +1,3 @@
-import sys
-print 'path: %s' % sys.path[:10]
-
 from tgen.discovery import Discovery, ttypes as o
 
 from redis import Redis

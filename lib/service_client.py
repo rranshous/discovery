@@ -54,7 +54,7 @@ def connect(service,host=None,port=None,rediscover=False):
         # if we didn't get a host / port use service
         # discovery to find it
         with connect_discovery() as c:
-            service_name = service.__name__
+            service_name = service.__name__.split('.')[-1]
             service_details = c.find_service(service_name)
             assert service_details, "Could not find service in discovery"
             port = service_details.port
