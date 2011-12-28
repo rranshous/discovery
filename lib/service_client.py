@@ -42,7 +42,7 @@ def connect_discovery():
 
 
 @contextmanager
-def connect(service,host=None,port=None,rediscover=False):
+def connect(service,host=None,port=None,rediscover=True):
 
     if rediscover and client_lookup.get(service):
         # refresh the client
