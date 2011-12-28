@@ -40,6 +40,22 @@ def connect_discovery():
 
     yield client_lookup.get(service)
 
+@contextmanager
+def connect_discovery():
+    from lib.discovery import Discovery
+
+    host = DISCOVERY_HOST
+    port = DISCOVERY_PORT
+    service = Discovery
+
+    transport = TSocket.TSocket(host,port)
+    transport = TTransport.TBufferedTransport(transport)
+    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+    client = getattr(service,'Client')(protocol)
+    transport.open()
+    yield client
+    transport.close()
+
 
 @contextmanager
 def connect_reuse(service,host=None,port=None,rediscover=True):
