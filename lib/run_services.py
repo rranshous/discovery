@@ -61,7 +61,15 @@ def serve_service(service, handler, host='127.0.0.1',port=None,
 
 if __name__ == '__main__':
     import sys, os
-    n = sys.argv[1]
+
+    # if they didn't give us the name use the
+    # current directories name
+    if len(sys.argv) == 1:
+        print 'no service name, using current dir'
+        n = os.path.basename(os.path.abspath('.'))
+    else:
+        n = sys.argv[1]
+
     print 'starting: %s' % n
 
     # and the root of this project, since the handler
