@@ -6,6 +6,8 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
+import random
+
 DISCOVERY_HOST = '127.0.0.1'
 DISCOVERY_PORT = 9191
 
@@ -86,14 +88,26 @@ def connect_reuse(service,host=None,port=None,rediscover=True):
 
     yield client_lookup.get(service)
 
+
+known_good = {}
+
 @contextmanager
 def connect(service,host=None,port=None):
-    with connect_discovery() as c:
-        service_name = service.__name__.split('.')[-1]
-        service_details = c.find_service(service_name)
-        assert service_details, "Could not find service in discovery"
-        port = service_details.port
-        host = service_details.host
+
+    global known_good
+
+    if not host or not port and service in known_good:
+        endpoint_list = known_good.get(service)
+        if endpoint_list:
+            host, port = random.sample(endpoint_list,1)[0]
+
+    if not host or not port:
+        with connect_discovery() as c:
+            service_name = service.__name__.split('.')[-1]
+            service_details = c.find_service(service_name)
+            assert service_details, "Could not find service in discovery"
+            port = service_details.port
+            host = service_details.host
 
     transport = TSocket.TSocket(host,port)
     transport = TTransport.TBufferedTransport(transport)
@@ -101,5 +115,6 @@ def connect(service,host=None,port=None):
     client = getattr(service,'Client')(protocol)
     transport.open()
     yield client
+    known_good.setdefault(service,[]).append((host,port))
     transport.close()
 
