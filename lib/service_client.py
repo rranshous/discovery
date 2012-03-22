@@ -70,9 +70,13 @@ def connect_reuse(service,host=None,port=None,rediscover=False):
     global global_transport_lookup
     global global_client_lookup
 
-    thread = threading.current_thread()
-    if thread:
-        thread = thread.get_ident()
+    try:
+        thread = threading.current_thread()
+        if thread:
+            thread = thread.get_ident()
+    except Exception, ex:
+        print 'Exception identifying thread: %s' % ex
+        thread = None
 
     # keep our lookup thread specific
     client_lookup = global_client_lookup.get(thread,{})
