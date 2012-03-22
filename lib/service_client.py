@@ -79,8 +79,8 @@ def connect_reuse(service,host=None,port=None,rediscover=False):
         thread = None
 
     # keep our lookup thread specific
-    client_lookup = global_client_lookup.get(thread,{})
-    transport_lookup = global_transport_lookup.get(thread,{})
+    client_lookup = global_client_lookup.setdefault(thread,{})
+    transport_lookup = global_transport_lookup.setdefault(thread,{})
 
     if rediscover and client_lookup.get(service):
         # refresh the client
@@ -105,6 +105,7 @@ def connect_reuse(service,host=None,port=None,rediscover=False):
                 assert service_details, "Could not find service in discovery"
                 port = service_details.port
                 host = service_details.host
+                endpoint_lookup.setdefault(service,[]).append((host,port))
 
         transport = TSocket.TSocket(host,port)
         transport = TTransport.TBufferedTransport(transport)
@@ -133,6 +134,7 @@ def connect_no_reuse(service,host=None,port=None):
             assert service_details, "Could not find service in discovery"
             port = service_details.port
             host = service_details.host
+            endpoint_lookup.setdefault(service,[]).append((host,port))
 
     transport = TSocket.TSocket(host,port)
     transport = TTransport.TBufferedTransport(transport)
@@ -140,7 +142,6 @@ def connect_no_reuse(service,host=None,port=None):
     client = getattr(service,'Client')(protocol)
     transport.open()
     yield client
-    endpoint_lookup.setdefault(service,[]).append((host,port))
     transport.close()
 
 
