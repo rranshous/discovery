@@ -73,7 +73,7 @@ def connect_reuse(service,host=None,port=None,rediscover=False):
     try:
         thread = threading.current_thread()
         if thread:
-            thread = thread.get_ident()
+            thread = thread.ident
     except Exception, ex:
         print 'Exception identifying thread: %s' % ex
         thread = None
@@ -91,7 +91,7 @@ def connect_reuse(service,host=None,port=None,rediscover=False):
     if not client_lookup.get(service):
 
         if not host or not port and service in endpoint_lookup:
-            endpoint_list = endpoint_lookup.get(service)
+            endpoint_list = endpoint_lookup.get(service,[])
             if endpoint_list:
                 host, port = random.sample(endpoint_list,1)[0]
 
@@ -106,13 +106,13 @@ def connect_reuse(service,host=None,port=None,rediscover=False):
                 port = service_details.port
                 host = service_details.host
 
-            transport = TSocket.TSocket(host,port)
-            transport = TTransport.TBufferedTransport(transport)
-            protocol = TBinaryProtocol.TBinaryProtocol(transport)
-            client = getattr(service,'Client')(protocol)
-            client_lookup[service] = client
-            transport_lookup[service] = transport
-            transport.open()
+        transport = TSocket.TSocket(host,port)
+        transport = TTransport.TBufferedTransport(transport)
+        protocol = TBinaryProtocol.TBinaryProtocol(transport)
+        client = getattr(service,'Client')(protocol)
+        client_lookup[service] = client
+        transport_lookup[service] = transport
+        transport.open()
 
     yield client_lookup.get(service)
 
