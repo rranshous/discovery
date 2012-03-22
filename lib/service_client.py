@@ -19,8 +19,9 @@ endpoint_lookup = {}
 
 # when we exit clean up our
 def cleanup_transports():
-    for service, transport in transport_lookup.iteritems():
-        transport.close()
+    for service, lookup in global_transport_lookup.iteritems():
+        for s, t in lookup.iteritems():
+            t.close()
 atexit.register(cleanup_transports)
 
 @contextmanager
@@ -63,7 +64,7 @@ def connect_discovery():
 
 
 @contextmanager
-def connect_reuse(service,host=None,port=None,rediscover=True):
+def connect_reuse(service,host=None,port=None,rediscover=False):
 
     global endpoint_lookup
     global global_transport_lookup
@@ -139,4 +140,4 @@ def connect_no_reuse(service,host=None,port=None):
     transport.close()
 
 
-connect = connect_no_reuse
+connect = connect_reuse
