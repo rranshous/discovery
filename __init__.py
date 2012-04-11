@@ -1,2 +1,3 @@
 from tgen.discovery import Discovery, ttypes as o
-from lib import serve_service, connect, connect_discovery
+from lib import serve_service, connect, connect_discovery, \
+                ThriftClientContext, ThriftClientContext as TCC
